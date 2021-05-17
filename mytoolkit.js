@@ -5,7 +5,7 @@ import {SVG} from './svg.min.js';
 
 /** 
  * Interface for classes that represent different widgets that can be rendered
- * 
+ * Creating any widgets requires using the Mytoolkit namespace
  * @interface
  */
 var MyToolkit = (function() {
