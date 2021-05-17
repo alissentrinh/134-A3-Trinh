@@ -9,10 +9,9 @@ import {SVG} from './svg.min.js';
  * @interface
  */
 var MyToolkit = (function() {
-
+    var draw = SVG().addTo('Body').size('100%','100%')
     /**
-     * Function that creates a button widget by creating a new
-     * 300 x 300 body and drawing a clickable rectangle around the middle
+     * Function that creates a button widget by creating a clickable rectangle around the middle
      * 
      * The text when the button has not been clicked can be set and changed by the consuming code.
      * The text when the button has been clicked can be set and changed by the consuming code.
@@ -20,7 +19,6 @@ var MyToolkit = (function() {
      * 
      */
     var Button = function(){
-        var draw = SVG().addTo('body').size('300','300');
         var rect = draw.rect(100,50).fill('gold');
         rect.stroke({ color: '#f06', opacity: 0.6, width: 5 });
         var clickEvent = null;
@@ -170,8 +168,7 @@ var MyToolkit = (function() {
 
     // code for creating svg checkbox widgets
     /**
-     * Function that creates a checkbox widget by creating a new
-     * 300 x 300 body and drawing a clickable square around the middle
+     * Function that creates a checkbox widget by a clickable square around the middle
      * with text to it's right
      * 
      * The text next to the checkbox can be set and changed by the consuming code.
@@ -179,7 +176,6 @@ var MyToolkit = (function() {
      * 
      */
     var CheckBox = function(){
-        var draw = SVG().addTo('body').size(300,300);
         var group = draw.group();
         var rect = draw.rect(25,25).fill('white');
         rect.stroke({ color: 'blue', opacity: 0.6, width: 2 });
@@ -278,8 +274,7 @@ var MyToolkit = (function() {
 
     // code for creating svg radio buttons
     /**
-     * Function that creates radio buttons by creating a 
-     * 300 x 300 body and drawing n radio buttons vertically 
+     * Function that creates radio buttons by creating n radio buttons vertically 
      * 
      * Users must implement the radio buttons into the HTML document, then 
      * set how many radio buttons to create, otherwise a default of 2 buttons
@@ -289,7 +284,6 @@ var MyToolkit = (function() {
      * @namespace Radiobutton
      */
     var Radiobutton = function(){
-        var draw = SVG().addTo('body').size(300,300);
         var group = draw.group();
 
         var numButtons = 2;
@@ -430,8 +424,7 @@ var MyToolkit = (function() {
 
     // code for creating textbox widgets
     /**
-     * Function that creates a textbox by creating a 300 x 300
-     * body and an outline of a rectangle depicting the
+     * Function that creates a textbox by creating an outline of a rectangle depicting the
      * available area to type. Characters will be outputted to 
      * the left of the carat. Backspace and shift are supported.
      * 
@@ -440,11 +433,11 @@ var MyToolkit = (function() {
      * @namespace Textbox
      */
     var TextBox = function() {
-        var draw = SVG().addTo('body').size(300,300);
         var rect = draw.rect(200,30).fill('white');
         rect.stroke({ color: 'blue', opacity: 0.6, width: 3});
         
         var textbox = draw.group();
+        textbox.add(rect);
         var text = textbox.text('Type Here...').move(2,5);
         var caret = textbox.line(45, 2.5, 45, 25).stroke({width: 1, color: 'white'});
         caret.move(85, 3.5);
@@ -598,16 +591,13 @@ var MyToolkit = (function() {
 
     // code for creating scrollbar widgets
     /**
-     * Function that creates a scrollbar by creating a 300 x 300
-     * body and a verticle rectangle depicting the scrollbar's area
+     * Function that creates a scrollbar by creating a verticle rectangle depicting the scrollbar's area
      * and a smaller rectangle inside depicting the actual scrollbar.
      * 
      * The height of the scrollbar can be set and changed by the consuming code. 
      * @namespace Scrollbar
      */
     var Scrollbar = function() {
-        var draw = SVG().addTo('body').size(300,300);
-
         var bar_height = 100;
         var bar = draw.rect(15, bar_height).fill('white');
         var inner_bar = draw.rect(12, 40).fill('blue');
@@ -799,8 +789,7 @@ var MyToolkit = (function() {
 
     // code for creating progress bar widgets
     /**
-     * Function that creates a Progressbar by creating a 300 x 300
-     * body and a horizontal rectangle depicting the progressbar's area
+     * Function that creates a Progressbar by creating a horizontal rectangle depicting the progressbar's area
      * and a smaller rectangle inside depicting the increment of the progressbar
      * or how "filled" the progressbar is.
      * 
@@ -810,7 +799,6 @@ var MyToolkit = (function() {
      * @namespace Progressbar 
      */
     var Progressbar = function() {
-        var draw = SVG().addTo('body').size(300,300);
 
         var bar_width = 100;
         var increment_val = 10;
@@ -927,8 +915,7 @@ var MyToolkit = (function() {
         }
     }
     /**
-     * Function that creates a toolbar by drawing on a 300 x 300 body
-     * and horizontal rectangles, each being a button. These buttons can be clicked on
+     * Function that creates a toolbar by creating horizontal rectangles, each being a button. These buttons can be clicked on
      * to denote which one will be selected. Only one button can be selected at a time.
      * 
      * Similar to radiobuttons, but instead it is horizontal buttons next to each other.
@@ -938,7 +925,6 @@ var MyToolkit = (function() {
      * @namespace Toolbar
      */
     var Toolbar = function() {
-        var draw = SVG().addTo('body').size(300,300);
         var group = draw.group()
 
         var prev_check = null;
@@ -1087,4 +1073,4 @@ var MyToolkit = (function() {
 return {Button, CheckBox, Radiobutton, TextBox, Scrollbar, Progressbar, Toolbar}
 }());
 
-export{MyToolkit}
+export{SVG, MyToolkit}
