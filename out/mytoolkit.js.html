@@ -45,6 +45,7 @@ var MyToolkit = (function() {
      * The text when the button has not been clicked can be set and changed by the consuming code.
      * The text when the button has been clicked can be set and changed by the consuming code.
      * @namespace Button
+     * 
      */
     var Button = function(){
         var draw = SVG().addTo('body').size('300','300');
@@ -156,7 +157,7 @@ var MyToolkit = (function() {
              * Binds eventHandler to the click event which will run
              * whenever the user clicks on the button
              * @memberof Button
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              */
             onclick: function(eventHandler){
                 clickEvent = eventHandler;
@@ -169,7 +170,7 @@ var MyToolkit = (function() {
              * 0 if button is not clicked
              * 1 if button is clicked
              * @memberof Button
-             * @param {eventHandler} eventHandler function to be binded to state event
+             * @param {eventHandler} eventHandler Function to be binded to state event
              */
             onstateChange: function(eventHandler) {
                 stateEvent = eventHandler;
@@ -280,7 +281,7 @@ var MyToolkit = (function() {
             /**
              * Binds  the inputted function to click event that 
              * will run whenever the checkbox has been clicked
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof CheckBox
              */
             onclick: function(eventHandler) {
@@ -293,7 +294,7 @@ var MyToolkit = (function() {
              * {state} | Action to get to state
              * 0 if checkbox is not checked
              * 1 if checkbox is checked
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof CheckBox
              */
             onstateChange: function(eventHandler) {
@@ -376,7 +377,7 @@ var MyToolkit = (function() {
              * Sets the number of radio buttons to the inputted number
              * If this is not set by the consuming code, there will only
              * be 2 buttons by default
-             * @param {number} numBtns number of radio buttons to create
+             * @param {number} numBtns Number of radio buttons to create
              * @memberof Radiobutton
              */
             setNumBtns: function(numBtns) {
@@ -431,7 +432,7 @@ var MyToolkit = (function() {
             /**
              * Binds  the inputted function to click event that 
              * will run whenever any of the radio buttons has been clicked
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof Radiobutton
              */
             onclick: function(eventHandler) {
@@ -445,7 +446,7 @@ var MyToolkit = (function() {
              * {state} | Action to get to state
              * 0 if no buttons are selected
              * 1 if a button is selected
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Radiobutton
              */
             onstateChange: function(eventHandler) {
@@ -460,18 +461,167 @@ var MyToolkit = (function() {
      * Function that creates a textbox by creating a 300 x 300
      * body and an outline of a rectangle depicting the
      * available area to type. Characters will be outputted to 
-     * the right of the carat and deleted to it's left.
+     * the left of the carat. Backspace and shift are supported.
+     * 
+     * Click on the textbox's rectangle to enable typing and a caret will appear. Click
+     * on the textbox's rectangle again to disable typing and the caret will disappear. 
      * @namespace Textbox
      */
     var TextBox = function() {
         var draw = SVG().addTo('body').size(300,300);
-        var rect = draw.rect(300,300).fill('white');
-        rect.stroke({ color: 'blue', opacity: 0.6, width: 6});
+        var rect = draw.rect(200,30).fill('white');
+        rect.stroke({ color: 'blue', opacity: 0.6, width: 3});
         
-        // var textbox = draw.foreignObject(250,250);
-        // var input_text = '';
-        // textbox.add(SVG('&lt;input type="text" id="input_text" name="input_text">'));
-        // console.log(input_text);
+        var textbox = draw.group();
+        var text = textbox.text('Type Here...').move(2,5);
+        var caret = textbox.line(45, 2.5, 45, 25).stroke({width: 1, color: 'white'});
+        caret.move(85, 3.5);
+
+        var totalChars = 12;
+        var maxChars = 30;
+
+        var clicked = 0;
+
+        var textEvent = null;
+        var stateEvent = null;
+
+        // state = -1 if typing is not enabled
+        // state = 0 if typing is enabled
+        var state = -1;
+
+
+        SVG.on(rect, 'click', (event) => {
+            if (clicked == 0){
+                caret.stroke({color: 'black'});
+                clicked = 1;
+                state = 0;
+                SVG.on(window, 'keyup', (event) =>{
+                    if (event.key == 'Backspace'){
+                        if (totalChars == maxChars){
+                            state = 0;
+                            if (stateEvent != null){
+                                stateEvent(state);
+                            }
+                        }
+                        if (totalChars != 0){
+                            text.text(text.text().slice(0, -1));
+                            caret.move(caret.attr('x1') - 6.5, caret.attr('y1'));
+                            totalChars -= 1;
+                            if (textEvent != null){
+                                textEvent(event.key);
+                            }
+                            
+                        }
+                        
+                    }
+                    else if (event.key == 'Shift'){
+                        if (textEvent != null){
+                            textEvent(event.key);
+                        }
+                        
+                    }
+                    else{
+                        if (totalChars &lt; maxChars){
+                            text.text(text.text() + event.key);
+                            totalChars +=1;
+                            if (event.key.toUpperCase() == event.key){
+                                caret.move(caret.attr('x1') + 10.5, caret.attr('y1'));
+                            }
+                            else{
+                                caret.move(caret.attr('x1') + 6.5, caret.attr('y1'));
+                            }
+                            if (textEvent != null){
+                                textEvent(event.key);
+                            }
+                            
+                        }
+                        else{
+                            if (state != 1){
+                                state = 1;
+                                if (stateEvent != null){
+                                    stateEvent(state);
+                                }
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    
+                })
+            }
+            else{
+                state = -1;
+                clicked = 0;
+                SVG.off(window, 'keyup');
+                caret.stroke({color: 'white'});
+            }
+            if (stateEvent != null){
+                stateEvent(state);
+            }
+            
+        })
+        
+
+        return{
+            /**
+             * Moves the textbox to the inputted (x,y) coordinates
+             * in the svg body
+             * @param {number} x x-coordinate
+             * @param {number} y y-coordinate
+             * @memberof Textbox
+             */
+            move: function(x, y){
+                textbox.move(x, y);
+            },
+            /**
+             * Returns the current text in the textbox
+             * @returns {string}
+             * @memberof Textbox
+             */
+            getText: function(){
+                return text.text();
+            },
+            /**
+             * Binds the inputted function to text event that will run
+             * whenever the text inside the textbox is changed
+             * @param {function} eventHandler Function to be binded to text event
+             * @memberof Textbox
+             */
+            onType: function(eventHandler){
+                textEvent = eventHandler;
+            },
+            /**
+             * Binds the inputted function to state event that will run
+             * whenever the textbox's state changes
+             * 
+             * {state} | action to get to state
+             * -1 if textbox has typing disabled
+             * 0 if textbox has typing enabled
+             * 1 if textbox has typing enabled and has reached the character limit
+             * @param {function} eventHandler Function to be binded to state event
+             * @memberof Textbox
+             */
+            onstateChange: function(eventHandler){
+                stateEvent = eventHandler;
+            },
+            /**
+             * Sets the max number of characters that can be typed into the textbox.
+             * By default, the max number of characters is 30.
+             * 
+             * NOTE: This does not change the width of the textbox, meaning if the max
+             * is high enough, the characters will bleed outside of the box. 
+             * @param {number} max Max characters that can be typed into the textbox
+             * @memberof Textbox
+             */
+            setMaxChars: function(max){
+                maxChars = max;
+            }
+        }
+
+        
     }
 
     // code for creating scrollbar widgets
@@ -650,7 +800,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to click event that will run 
              * whenever the inner bar is clicked
-             * @param {function} eventHandler function to be binded click event
+             * @param {function} eventHandler Function to be binded click event
              * @memberof Scrollbar
              */
             onclick: function(eventHandler) {
@@ -665,7 +815,7 @@ var MyToolkit = (function() {
              * 1 if bar is being moved
              * 2 if bar is being moved while cursor in the outer box
              * 3 if bar is at an end point
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Scrollbar
              */
             onstateChange: function(eventHandler) {
@@ -681,7 +831,7 @@ var MyToolkit = (function() {
      * body and a horizontal rectangle depicting the progressbar's area
      * and a smaller rectangle inside depicting the increment of the progressbar
      * or how "filled" the progressbar is.
-     *  
+     * 
      * How filled the progressbar is can be set and changed by the consuming code. 
      * The width of the containing rectangle can be set and changed by the consuming code.
      * 
@@ -723,7 +873,7 @@ var MyToolkit = (function() {
             },
             /**
              * Sets the width of the containing rectangle for the progressbar.
-             * @param {number} w width of the progressbar
+             * @param {number} w Width of the progressbar
              * @memberof Progressbar
              */
             setWidth: function(w) {
@@ -744,7 +894,7 @@ var MyToolkit = (function() {
              * the inputted value. The value should be a number
              * between 0 - the width of the progress bar. This value will
              * be converted to a percentage from 0-100%.
-             * @param {number} x increment value
+             * @param {number} x Increment value
              * @memberof Progressbar
              */
             setIncrement: function(x) {
@@ -766,7 +916,7 @@ var MyToolkit = (function() {
             /**
              * Returns how filled the Progressbar is. This is the exact increment value and
              * NOT a percentage.
-             * @returns {number} increment value
+             * @returns {number} Increment value
              * @memberof Progressbar
              */
             getIncrement: function() {
@@ -775,7 +925,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to increment event that runs whenever the progressbar's 
              * increment value changes.
-             * @param {function} eventHandler function to be binded to inc event
+             * @param {function} eventHandler Function to be binded to inc event
              * @memberof Progressbar
              */
             onIncrement: function(eventHandler) {
@@ -795,7 +945,7 @@ var MyToolkit = (function() {
              * 0 if bar has not been changed 
              * 1 if bar has been changed, usually because it has been incremented
              * 
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Progressbar
              */
             onstateChange: function(eventHandler) {
@@ -821,11 +971,44 @@ var MyToolkit = (function() {
 
         var prev_check = null;
 
+        var stateEvent = null;
+        var clickEvent = null;
+
         var numButtons = 2;
 
+        // [ [rect, color, flag] ]
         var button_array = [];
 
         var checked_color = 'black';
+
+        group.click(function(event, clicked){
+            for(var i=0;i &lt; numButtons; i++){
+                if (button_array[i][0] == event.target.instance){
+                    // deselect previous button 
+                    if (prev_check != null){
+                        button_array[prev_check][2] = 0;
+                        button_array[prev_check][0].attr('fill', button_array[prev_check][1]);
+                    }
+
+                    button_array[i][2] = 1;
+                    button_array[i][0].attr('fill', checked_color);
+
+                    prev_check = i;
+
+                    if (clickEvent != null){
+                        clicked = prev_check;
+                        clickEvent(clicked);
+                    }
+                    if (stateEvent != null){
+                        stateEvent(clicked);
+                    }
+                
+                }
+            }
+                    
+        })
+
+        
 
         return{
             /**
@@ -851,15 +1034,13 @@ var MyToolkit = (function() {
                     var rect = draw.rect(50, 30).fill('white');
                     rect.stroke({ color: 'blue', opacity: 0.6, width: 2 });
                     rect.move(temp_move,0);
-                    button_array.push([rect, 0]);
+                    button_array.push([rect, 'white', 0]);
                     temp_move = temp_move + 50;
                     group.add(rect);
 
                 }
-                console.log(button_array);
                 
             },
-            // needs text and which button, starting from 0 - n-1 top down
             /**
              * Sets the inputted button to the inputted color.
              * 
@@ -868,16 +1049,25 @@ var MyToolkit = (function() {
              * Color can be inputted either as the english word for the color (i.e 'Blue')
              * or the hex number of the color. If inputting as hex, make sure to include the 
              * '#' before the numbers (i.e #10001111)
-             * @param {(string | hex)} color color either as text or hex 
+             * 
+             * By default, buttons will be white until set.
+             * @param {(string | hex)} color Color either as text or hex 
              * @param {index} num_button Index of the button to change
              * @memberof Toolbar
              */
             setBtnColor: function(color, num_button) {
-                button_array[num_button][0].attr('fill', color);    
+                button_array[num_button][0].attr('fill', color); 
+                button_array[num_button][1] = color;   
             },
             /**
+             * Sets the color that the selected button will change into.
              * 
-             * @param {{string, hex}} color color either as text or hex
+             * Color can be inputted either as the english word for the color (i.e 'Blue')
+             * or the hex number of the color. If inputting as hex, make sure to include the 
+             * '#' before the numbers (i.e #10001111)
+             * 
+             * By default, this color is black.
+             * @param {{string, hex}} color Color either as text or hex
              * @memberof Toolbar 
              */
             setCheckedColor: function(color) {
@@ -902,11 +1092,11 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to click event that will run whenever a
              * button has been clicked.
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof Toolbar
              */
             onclick: function(eventHandler) {
-                click_event = eventHandler;
+                clickEvent = eventHandler;
             },
             /**
              * Binds the inputted function to state event that will run whenever
@@ -914,7 +1104,7 @@ var MyToolkit = (function() {
              * 
              * {state} | Action to get to state
              * 
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Toolbar
              */
             onstateChange: function(eventHandler) {
@@ -941,7 +1131,7 @@ export{MyToolkit}</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun May 16 2021 16:21:45 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun May 16 2021 19:58:05 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

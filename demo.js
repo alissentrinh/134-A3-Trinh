@@ -9,10 +9,9 @@ btn.setClickedText('clicked!');
 btn.move(100,100);
 btn.onclick(function(e){
 	console.log('Button has been clicked');
-	console.log(e);
 });
 btn.onstateChange(function(e){
-	console.log('Button state has changed');
+	console.log('Button state has changed to:');
 	console.log(e);
 })
 
@@ -23,10 +22,9 @@ checkbox.move(100, 100);
 checkbox.setText = 'click here!'
 checkbox.onclick(function(e){
 	console.log('Checkbox has been clicked')
-	console.log(e);
 });
 checkbox.onstateChange(function(e){
-	console.log('Checkbox state has changed');
+	console.log('Checkbox state has changed to:');
 	console.log(e);
 })
 

@@ -17,6 +17,7 @@ var MyToolkit = (function() {
      * The text when the button has not been clicked can be set and changed by the consuming code.
      * The text when the button has been clicked can be set and changed by the consuming code.
      * @namespace Button
+     * 
      */
     var Button = function(){
         var draw = SVG().addTo('body').size('300','300');
@@ -128,7 +129,7 @@ var MyToolkit = (function() {
              * Binds eventHandler to the click event which will run
              * whenever the user clicks on the button
              * @memberof Button
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              */
             onclick: function(eventHandler){
                 clickEvent = eventHandler;
@@ -141,7 +142,7 @@ var MyToolkit = (function() {
              * 0 if button is not clicked
              * 1 if button is clicked
              * @memberof Button
-             * @param {eventHandler} eventHandler function to be binded to state event
+             * @param {eventHandler} eventHandler Function to be binded to state event
              */
             onstateChange: function(eventHandler) {
                 stateEvent = eventHandler;
@@ -252,7 +253,7 @@ var MyToolkit = (function() {
             /**
              * Binds  the inputted function to click event that 
              * will run whenever the checkbox has been clicked
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof CheckBox
              */
             onclick: function(eventHandler) {
@@ -265,7 +266,7 @@ var MyToolkit = (function() {
              * {state} | Action to get to state
              * 0 if checkbox is not checked
              * 1 if checkbox is checked
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof CheckBox
              */
             onstateChange: function(eventHandler) {
@@ -348,7 +349,7 @@ var MyToolkit = (function() {
              * Sets the number of radio buttons to the inputted number
              * If this is not set by the consuming code, there will only
              * be 2 buttons by default
-             * @param {number} numBtns number of radio buttons to create
+             * @param {number} numBtns Number of radio buttons to create
              * @memberof Radiobutton
              */
             setNumBtns: function(numBtns) {
@@ -403,7 +404,7 @@ var MyToolkit = (function() {
             /**
              * Binds  the inputted function to click event that 
              * will run whenever any of the radio buttons has been clicked
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof Radiobutton
              */
             onclick: function(eventHandler) {
@@ -417,7 +418,7 @@ var MyToolkit = (function() {
              * {state} | Action to get to state
              * 0 if no buttons are selected
              * 1 if a button is selected
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Radiobutton
              */
             onstateChange: function(eventHandler) {
@@ -558,7 +559,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to text event that will run
              * whenever the text inside the textbox is changed
-             * @param {function} eventHandler function to be binded to text event
+             * @param {function} eventHandler Function to be binded to text event
              * @memberof Textbox
              */
             onType: function(eventHandler){
@@ -572,7 +573,7 @@ var MyToolkit = (function() {
              * -1 if textbox has typing disabled
              * 0 if textbox has typing enabled
              * 1 if textbox has typing enabled and has reached the character limit
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Textbox
              */
             onstateChange: function(eventHandler){
@@ -771,7 +772,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to click event that will run 
              * whenever the inner bar is clicked
-             * @param {function} eventHandler function to be binded click event
+             * @param {function} eventHandler Function to be binded click event
              * @memberof Scrollbar
              */
             onclick: function(eventHandler) {
@@ -786,7 +787,7 @@ var MyToolkit = (function() {
              * 1 if bar is being moved
              * 2 if bar is being moved while cursor in the outer box
              * 3 if bar is at an end point
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Scrollbar
              */
             onstateChange: function(eventHandler) {
@@ -802,7 +803,7 @@ var MyToolkit = (function() {
      * body and a horizontal rectangle depicting the progressbar's area
      * and a smaller rectangle inside depicting the increment of the progressbar
      * or how "filled" the progressbar is.
-     *  
+     * 
      * How filled the progressbar is can be set and changed by the consuming code. 
      * The width of the containing rectangle can be set and changed by the consuming code.
      * 
@@ -844,7 +845,7 @@ var MyToolkit = (function() {
             },
             /**
              * Sets the width of the containing rectangle for the progressbar.
-             * @param {number} w width of the progressbar
+             * @param {number} w Width of the progressbar
              * @memberof Progressbar
              */
             setWidth: function(w) {
@@ -865,7 +866,7 @@ var MyToolkit = (function() {
              * the inputted value. The value should be a number
              * between 0 - the width of the progress bar. This value will
              * be converted to a percentage from 0-100%.
-             * @param {number} x increment value
+             * @param {number} x Increment value
              * @memberof Progressbar
              */
             setIncrement: function(x) {
@@ -887,7 +888,7 @@ var MyToolkit = (function() {
             /**
              * Returns how filled the Progressbar is. This is the exact increment value and
              * NOT a percentage.
-             * @returns {number} increment value
+             * @returns {number} Increment value
              * @memberof Progressbar
              */
             getIncrement: function() {
@@ -896,7 +897,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to increment event that runs whenever the progressbar's 
              * increment value changes.
-             * @param {function} eventHandler function to be binded to inc event
+             * @param {function} eventHandler Function to be binded to inc event
              * @memberof Progressbar
              */
             onIncrement: function(eventHandler) {
@@ -916,7 +917,7 @@ var MyToolkit = (function() {
              * 0 if bar has not been changed 
              * 1 if bar has been changed, usually because it has been incremented
              * 
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Progressbar
              */
             onstateChange: function(eventHandler) {
@@ -1022,7 +1023,7 @@ var MyToolkit = (function() {
              * '#' before the numbers (i.e #10001111)
              * 
              * By default, buttons will be white until set.
-             * @param {(string | hex)} color color either as text or hex 
+             * @param {(string | hex)} color Color either as text or hex 
              * @param {index} num_button Index of the button to change
              * @memberof Toolbar
              */
@@ -1038,7 +1039,7 @@ var MyToolkit = (function() {
              * '#' before the numbers (i.e #10001111)
              * 
              * By default, this color is black.
-             * @param {{string, hex}} color color either as text or hex
+             * @param {{string, hex}} color Color either as text or hex
              * @memberof Toolbar 
              */
             setCheckedColor: function(color) {
@@ -1063,7 +1064,7 @@ var MyToolkit = (function() {
             /**
              * Binds the inputted function to click event that will run whenever a
              * button has been clicked.
-             * @param {function} eventHandler function to be binded to click event
+             * @param {function} eventHandler Function to be binded to click event
              * @memberof Toolbar
              */
             onclick: function(eventHandler) {
@@ -1075,7 +1076,7 @@ var MyToolkit = (function() {
              * 
              * {state} | Action to get to state
              * 
-             * @param {function} eventHandler function to be binded to state event
+             * @param {function} eventHandler Function to be binded to state event
              * @memberof Toolbar
              */
             onstateChange: function(eventHandler) {
