@@ -304,11 +304,14 @@ var MyToolkit = (function() {
                         button_array[prev_check][2] = 0;
                         button_array[prev_check][3].remove();
                         button_array[prev_check].pop();
+                        
                     }
 
                     button_array[i][2] = 1;
                     var check_circle = draw.circle(15).fill('blue');
-                    check_circle.move(102.5, i * 30 + 102.5);
+                    console.log(button_array[i][0].attr())
+                    check_circle.move(button_array[i][0].attr('cx') - 7.5, button_array[i][0].attr('cy') - 7.5);
+                    
 
                     button_array[i].push(check_circle);
                     prev_check = i;
