@@ -432,18 +432,167 @@ var MyToolkit = (function() {
      * Function that creates a textbox by creating a 300 x 300
      * body and an outline of a rectangle depicting the
      * available area to type. Characters will be outputted to 
-     * the right of the carat and deleted to it's left.
+     * the left of the carat. Backspace and shift are supported.
+     * 
+     * Click on the textbox's rectangle to enable typing and a caret will appear. Click
+     * on the textbox's rectangle again to disable typing and the caret will disappear. 
      * @namespace Textbox
      */
     var TextBox = function() {
         var draw = SVG().addTo('body').size(300,300);
-        var rect = draw.rect(300,300).fill('white');
-        rect.stroke({ color: 'blue', opacity: 0.6, width: 6});
+        var rect = draw.rect(200,30).fill('white');
+        rect.stroke({ color: 'blue', opacity: 0.6, width: 3});
         
-        // var textbox = draw.foreignObject(250,250);
-        // var input_text = '';
-        // textbox.add(SVG('<input type="text" id="input_text" name="input_text">'));
-        // console.log(input_text);
+        var textbox = draw.group();
+        var text = textbox.text('Type Here...').move(2,5);
+        var caret = textbox.line(45, 2.5, 45, 25).stroke({width: 1, color: 'white'});
+        caret.move(85, 3.5);
+
+        var totalChars = 12;
+        var maxChars = 30;
+
+        var clicked = 0;
+
+        var textEvent = null;
+        var stateEvent = null;
+
+        // state = -1 if typing is not enabled
+        // state = 0 if typing is enabled
+        var state = -1;
+
+
+        SVG.on(rect, 'click', (event) => {
+            if (clicked == 0){
+                caret.stroke({color: 'black'});
+                clicked = 1;
+                state = 0;
+                SVG.on(window, 'keyup', (event) =>{
+                    if (event.key == 'Backspace'){
+                        if (totalChars == maxChars){
+                            state = 0;
+                            if (stateEvent != null){
+                                stateEvent(state);
+                            }
+                        }
+                        if (totalChars != 0){
+                            text.text(text.text().slice(0, -1));
+                            caret.move(caret.attr('x1') - 6.5, caret.attr('y1'));
+                            totalChars -= 1;
+                            if (textEvent != null){
+                                textEvent(event.key);
+                            }
+                            
+                        }
+                        
+                    }
+                    else if (event.key == 'Shift'){
+                        if (textEvent != null){
+                            textEvent(event.key);
+                        }
+                        
+                    }
+                    else{
+                        if (totalChars < maxChars){
+                            text.text(text.text() + event.key);
+                            totalChars +=1;
+                            if (event.key.toUpperCase() == event.key){
+                                caret.move(caret.attr('x1') + 10.5, caret.attr('y1'));
+                            }
+                            else{
+                                caret.move(caret.attr('x1') + 6.5, caret.attr('y1'));
+                            }
+                            if (textEvent != null){
+                                textEvent(event.key);
+                            }
+                            
+                        }
+                        else{
+                            if (state != 1){
+                                state = 1;
+                                if (stateEvent != null){
+                                    stateEvent(state);
+                                }
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    
+                })
+            }
+            else{
+                state = -1;
+                clicked = 0;
+                SVG.off(window, 'keyup');
+                caret.stroke({color: 'white'});
+            }
+            if (stateEvent != null){
+                stateEvent(state);
+            }
+            
+        })
+        
+
+        return{
+            /**
+             * Moves the textbox to the inputted (x,y) coordinates
+             * in the svg body
+             * @param {number} x x-coordinate
+             * @param {number} y y-coordinate
+             * @memberof Textbox
+             */
+            move: function(x, y){
+                textbox.move(x, y);
+            },
+            /**
+             * Returns the current text in the textbox
+             * @returns {string}
+             * @memberof Textbox
+             */
+            getText: function(){
+                return text.text();
+            },
+            /**
+             * Binds the inputted function to text event that will run
+             * whenever the text inside the textbox is changed
+             * @param {function} eventHandler function to be binded to text event
+             * @memberof Textbox
+             */
+            onType: function(eventHandler){
+                textEvent = eventHandler;
+            },
+            /**
+             * Binds the inputted function to state event that will run
+             * whenever the textbox's state changes
+             * 
+             * {state} | action to get to state
+             * -1 if textbox has typing disabled
+             * 0 if textbox has typing enabled
+             * 1 if textbox has typing enabled and has reached the character limit
+             * @param {function} eventHandler function to be binded to state event
+             * @memberof Textbox
+             */
+            onstateChange: function(eventHandler){
+                stateEvent = eventHandler;
+            },
+            /**
+             * Sets the max number of characters that can be typed into the textbox.
+             * By default, the max number of characters is 30.
+             * 
+             * NOTE: This does not change the width of the textbox, meaning if the max
+             * is high enough, the characters will bleed outside of the box. 
+             * @param {number} max Max characters that can be typed into the textbox
+             * @memberof Textbox
+             */
+            setMaxChars: function(max){
+                maxChars = max;
+            }
+        }
+
+        
     }
 
     // code for creating scrollbar widgets
@@ -793,11 +942,44 @@ var MyToolkit = (function() {
 
         var prev_check = null;
 
+        var stateEvent = null;
+        var clickEvent = null;
+
         var numButtons = 2;
 
+        // [ [rect, color, flag] ]
         var button_array = [];
 
         var checked_color = 'black';
+
+        group.click(function(event, clicked){
+            for(var i=0;i < numButtons; i++){
+                if (button_array[i][0] == event.target.instance){
+                    // deselect previous button 
+                    if (prev_check != null){
+                        button_array[prev_check][2] = 0;
+                        button_array[prev_check][0].attr('fill', button_array[prev_check][1]);
+                    }
+
+                    button_array[i][2] = 1;
+                    button_array[i][0].attr('fill', checked_color);
+
+                    prev_check = i;
+
+                    if (clickEvent != null){
+                        clicked = prev_check;
+                        clickEvent(clicked);
+                    }
+                    if (stateEvent != null){
+                        stateEvent(clicked);
+                    }
+                
+                }
+            }
+                    
+        })
+
+        
 
         return{
             /**
@@ -823,15 +1005,13 @@ var MyToolkit = (function() {
                     var rect = draw.rect(50, 30).fill('white');
                     rect.stroke({ color: 'blue', opacity: 0.6, width: 2 });
                     rect.move(temp_move,0);
-                    button_array.push([rect, 0]);
+                    button_array.push([rect, 'white', 0]);
                     temp_move = temp_move + 50;
                     group.add(rect);
 
                 }
-                console.log(button_array);
                 
             },
-            // needs text and which button, starting from 0 - n-1 top down
             /**
              * Sets the inputted button to the inputted color.
              * 
@@ -840,15 +1020,24 @@ var MyToolkit = (function() {
              * Color can be inputted either as the english word for the color (i.e 'Blue')
              * or the hex number of the color. If inputting as hex, make sure to include the 
              * '#' before the numbers (i.e #10001111)
+             * 
+             * By default, buttons will be white until set.
              * @param {(string | hex)} color color either as text or hex 
              * @param {index} num_button Index of the button to change
              * @memberof Toolbar
              */
             setBtnColor: function(color, num_button) {
-                button_array[num_button][0].attr('fill', color);    
+                button_array[num_button][0].attr('fill', color); 
+                button_array[num_button][1] = color;   
             },
             /**
+             * Sets the color that the selected button will change into.
              * 
+             * Color can be inputted either as the english word for the color (i.e 'Blue')
+             * or the hex number of the color. If inputting as hex, make sure to include the 
+             * '#' before the numbers (i.e #10001111)
+             * 
+             * By default, this color is black.
              * @param {{string, hex}} color color either as text or hex
              * @memberof Toolbar 
              */
@@ -878,7 +1067,7 @@ var MyToolkit = (function() {
              * @memberof Toolbar
              */
             onclick: function(eventHandler) {
-                click_event = eventHandler;
+                clickEvent = eventHandler;
             },
             /**
              * Binds the inputted function to state event that will run whenever

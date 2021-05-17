@@ -48,6 +48,12 @@ radbtn.onstateChange(function(e){
 
 // Implement a MyToolkit textbox
 var textbox = new MyToolkit.TextBox;
+textbox.onType(function(e){
+	console.log(e);
+})
+textbox.onstateChange(function(e){
+	console.log(e);
+})
 
 // Implement a MyToolKit scrollbar
 var scrollbar = new MyToolkit.Scrollbar;
@@ -84,3 +90,10 @@ toolbar.setNumBtns(3);
 toolbar.move(100, 100);
 toolbar.setBtnColor('#0000b3', 0)
 toolbar.setBtnColor('gold', 2)
+toolbar.onclick(function(e){
+	console.log('Toolbar Button has been clicked at option (0 - n-1):');
+	console.log(e);
+})
+toolbar.onstateChange(function(e){
+	console.log('Toolbar state has changed');
+})
